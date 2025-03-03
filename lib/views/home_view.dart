@@ -50,8 +50,6 @@ class _HomeViewState extends State<HomeView> {
     _bannerAd?.load();
   }
 
-
-
   void loadInterstitialAd() {
     InterstitialAd.load(
       adUnitId: AdServices.interstitialAdUnitId,
@@ -64,7 +62,8 @@ class _HomeViewState extends State<HomeView> {
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
               setState(() {
-                _interstitialAd = null; // ✅ Correct
+                audioService.playAudio();
+                _interstitialAd = null;
               });
               loadInterstitialAd(); // Load a new ad for future use
             },
@@ -97,9 +96,6 @@ class _HomeViewState extends State<HomeView> {
   bool canShowInterstitialAd() {
     return interstitialAdCount == 0;
   }
-
-
-
 
   @override
   void dispose() {
@@ -158,9 +154,12 @@ class _HomeViewState extends State<HomeView> {
                     builder: (context, provider, _) {
                       return InkWell(
                         onTap: () async {
-                          showInterstitialAd();
-                          await provider.toggleAudio();
-                          setState(() {});
+                          if (canShowInterstitialAd()) {
+                            showInterstitialAd();
+                          } else {
+                            await provider.toggleAudio();
+                            setState(() {});
+                          }
                         },
                         child: Image(
                           image: AssetImage(
