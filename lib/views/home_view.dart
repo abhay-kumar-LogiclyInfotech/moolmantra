@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:moolmantra/services/ad_services.dart';
+import 'package:moolmantra/views/drawer_view.dart';
 import 'package:provider/provider.dart';
 
 import '../services/audio_services.dart';
@@ -13,6 +14,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   /// instance of audio service class
   final audioService = AudioService();
 
@@ -33,7 +36,6 @@ class _HomeViewState extends State<HomeView> {
 
     /// show banner ad
     loadBannerAd();
-
   }
 
   /// Banner Ad
@@ -42,7 +44,8 @@ class _HomeViewState extends State<HomeView> {
 
   void loadBannerAd() async {
     while (bannerAdRetryCount < maxAdRetries) {
-      _bannerAd?.dispose(); // Dispose of the previous ad before creating a new one
+      _bannerAd
+          ?.dispose(); // Dispose of the previous ad before creating a new one
 
       _bannerAd = BannerAd(
         adUnitId: AdServices.bannerAdUnitId,
@@ -70,8 +73,8 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-
   int numMaxAttempt = 0;
+
   /// interstitial Ad
   void loadInterstitialAd() {
     _interstitialAd?.dispose();
@@ -80,8 +83,8 @@ class _HomeViewState extends State<HomeView> {
       request: AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-            _interstitialAd = ad;
-            _interstitialAd?.setImmersiveMode(true);
+          _interstitialAd = ad;
+          _interstitialAd?.setImmersiveMode(true);
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
               setState(() {
@@ -103,7 +106,8 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-  void showInterstitialAd() async{
+
+  void showInterstitialAd() async {
     await Future.delayed(Duration(seconds: 5));
     if (canShowInterstitialAd()) {
       if (_interstitialAd != null) {
@@ -128,7 +132,9 @@ class _HomeViewState extends State<HomeView> {
   // Function to retry loading the interstitial ad
   void retryLoadInterstitialAd({int retries = 3, int delaySeconds = 2}) async {
     for (int i = 0; i < retries; i++) {
-      await Future.delayed(Duration(seconds: delaySeconds)); // Wait before retrying
+      await Future.delayed(
+        Duration(seconds: delaySeconds),
+      ); // Wait before retrying
       loadInterstitialAd(); // Try loading the ad again
 
       if (_interstitialAd != null) {
@@ -139,18 +145,17 @@ class _HomeViewState extends State<HomeView> {
     debugPrint("Failed to load Interstitial Ad after $retries retries.");
   }
 
-
   @override
   void dispose() {
     audioService.dispose();
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: DrawerView(audioService:audioService),
       body: Stack(
         children: [
           _buildUi(context),
@@ -171,6 +176,7 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+
   Widget _buildUi(BuildContext context) {
     return SafeArea(
       child: AnimatedContainer(
@@ -199,8 +205,8 @@ class _HomeViewState extends State<HomeView> {
                       builder: (context, provider, _) {
                         return InkWell(
                           onTap: () async {
-                              showInterstitialAd();
-                               provider.toggleAudio();
+                            showInterstitialAd();
+                            provider.toggleAudio();
                           },
                           child: Image(
                             image: AssetImage(
@@ -214,6 +220,16 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              child: IconButton(
+                onPressed: () {
+                  _scaffoldKey.currentState?.openEndDrawer();
+                  },
+                icon: Icon(Icons.menu, color: Colors.white, size: 35),
               ),
             ),
           ],
