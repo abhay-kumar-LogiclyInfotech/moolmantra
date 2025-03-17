@@ -14,9 +14,12 @@ class _SplashViewState extends State<SplashView> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((callback)async {
-      /// Navigate to the home screen
-     await Future.delayed(Duration(seconds: 1),()async{ Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>HomeView()));});
+    Future.delayed(Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          CupertinoPageRoute(builder: (context) => HomeView()),
+        );
+      }
     });
   }
 
@@ -26,13 +29,15 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Widget _buildUi(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/splash/splash_image.jpg"),
-          fit: BoxFit.fill,
+    return SafeArea(
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/splash/splash_image.jpg"),
+            fit: BoxFit.fill,
+          ),
         ),
       ),
     );

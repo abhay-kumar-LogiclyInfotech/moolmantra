@@ -38,10 +38,10 @@ class _HomeViewState extends State<HomeView> {
 
   /// Banner Ad
   int maxAdRetries = 5; // Set a sensible retry limit
-  int adRetryCount = 0;
+  int bannerAdRetryCount = 0;
 
   void loadBannerAd() async {
-    while (adRetryCount < maxAdRetries) {
+    while (bannerAdRetryCount < maxAdRetries) {
       _bannerAd?.dispose(); // Dispose of the previous ad before creating a new one
 
       _bannerAd = BannerAd(
@@ -52,13 +52,13 @@ class _HomeViewState extends State<HomeView> {
           onAdLoaded: (ad) {
             _bannerAd = ad as BannerAd;
             setState(() {});
-            adRetryCount = 0; // Reset retry count on success
+            bannerAdRetryCount = 0; // Reset retry count on success
           },
           onAdFailedToLoad: (ad, err) {
             ad.dispose();
             _bannerAd = null;
-            adRetryCount++;
-            if (adRetryCount < maxAdRetries) {
+            bannerAdRetryCount++;
+            if (bannerAdRetryCount < maxAdRetries) {
               Future.delayed(Duration(seconds: 5), loadBannerAd);
             }
           },
@@ -103,7 +103,8 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-  void showInterstitialAd() {
+  void showInterstitialAd() async{
+    await Future.delayed(Duration(seconds: 5));
     if (canShowInterstitialAd()) {
       if (_interstitialAd != null) {
         _interstitialAd!.show();
@@ -157,7 +158,7 @@ class _HomeViewState extends State<HomeView> {
             SafeArea(
               child: Center(
                 child: Align(
-                  alignment: Alignment.topCenter,
+                  alignment: Alignment.bottomCenter,
                   child: SizedBox(
                     height: _bannerAd!.size.height.toDouble(),
                     width: _bannerAd!.size.width.toDouble(),
@@ -171,51 +172,52 @@ class _HomeViewState extends State<HomeView> {
     );
   }
   Widget _buildUi(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
-      height: double.infinity,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/home/home_image.jpg"),
-          fit: BoxFit.fill,
-        ),
-      ),
-
-      child: Stack(
-        children: [
-          Positioned(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 150,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ChangeNotifierProvider(
-                  create: (context) => AudioService(),
-                  child: Consumer<AudioService>(
-                    builder: (context, provider, _) {
-                      return InkWell(
-                        onTap: () async {
-                            showInterstitialAd();
-                             provider.toggleAudio();
-
-                        },
-                        child: Image(
-                          image: AssetImage(
-                            provider.isPlaying
-                                ? "assets/home/stop_image.png"
-                                : "assets/home/play_button_image.png",
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+    return SafeArea(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 500),
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/home/home_image.jpg"),
+            fit: BoxFit.fill,
           ),
-        ],
+        ),
+
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 150,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ChangeNotifierProvider(
+                    create: (context) => AudioService(),
+                    child: Consumer<AudioService>(
+                      builder: (context, provider, _) {
+                        return InkWell(
+                          onTap: () async {
+                              showInterstitialAd();
+                               provider.toggleAudio();
+                          },
+                          child: Image(
+                            image: AssetImage(
+                              provider.isPlaying
+                                  ? "assets/home/stop_image.png"
+                                  : "assets/home/play_button_image.png",
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
