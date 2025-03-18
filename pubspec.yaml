@@ -16,9 +16,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  # Audio player
   audioplayers: ^6.2.0
-  # google ads dependencies
   google_mobile_ads: ^5.3.1
   provider:
   shared_preferences: ^2.5.2
@@ -29,6 +27,7 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.3
+  rename_app:
 
 
 
