@@ -9,6 +9,10 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   await AudioService().init(); // Load saved preferences
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.black, // Change to your desired color
