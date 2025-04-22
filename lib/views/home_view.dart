@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:moolmantra/services/ad_services.dart';
 import 'package:moolmantra/views/drawer_view.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,20 @@ class _HomeViewState extends State<HomeView> {
 
     /// show banner ad
     loadBannerAd();
+
+   // _askForAppReview();
   }
+
+
+
+  _askForAppReview()async{
+    final InAppReview inAppReview = InAppReview.instance;
+
+    if (await inAppReview.isAvailable()) {
+    inAppReview.requestReview();
+    }
+  }
+
 
   /// Banner Ad
   int maxAdRetries = 5; // Set a sensible retry limit
@@ -44,8 +58,7 @@ class _HomeViewState extends State<HomeView> {
 
   void loadBannerAd() async {
     while (bannerAdRetryCount < maxAdRetries) {
-      _bannerAd
-          ?.dispose(); // Dispose of the previous ad before creating a new one
+      _bannerAd?.dispose(); // Dispose of the previous ad before creating a new one
 
       _bannerAd = BannerAd(
         adUnitId: AdServices.bannerAdUnitId,

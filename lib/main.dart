@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:moolmantra/services/audio_services.dart';
 import 'package:moolmantra/views/splash_view.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';import 'package:in_app_review/in_app_review.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +24,13 @@ void main() async{
   runApp(const MyApp());
 }
 
+
+
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
